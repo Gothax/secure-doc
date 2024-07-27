@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.gothaxcity.securedoc_be.utils.UserUtils.createUserEntity;
 
@@ -50,6 +52,24 @@ public class UserServiceImpl implements UserService {
     public RoleEntity getRoleName(String name) {
         var role = roleRepository.findByNameIgnoreCase(name);
         return role.orElseThrow(() -> new ApiException("Role not found"));
+    }
+
+    @Override
+    public void verifyAccountKey(String key) {
+        ConfirmationEntity confirmationEntity = getUserConfirmation(key);
+        UserEntity userEntity = getUserEntityByEmail(confirmationEntity.getUserEntity().getEmail());
+        userEntity.setEnabled(true);
+        userRepository.save(userEntity);
+        confirmationRepository.delete(confirmationEntity);
+    }
+
+    private UserEntity getUserEntityByEmail(String email) {
+        Optional<UserEntity> userByEmail = userRepository.findByEmailIgnoreCase(email);
+        return userByEmail.orElseThrow(()-> new ApiException("User not found"));
+    }
+
+    private ConfirmationEntity getUserConfirmation(String key) {
+        return confirmationRepository.findByKey(key).orElseThrow(()-> new ApiException("Confirmation key not found"));
     }
 
     private UserEntity createNewUser(String firstName, String lastName, String email) {
