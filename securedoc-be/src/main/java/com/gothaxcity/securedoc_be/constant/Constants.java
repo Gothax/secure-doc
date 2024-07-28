@@ -1,6 +1,7 @@
 package com.gothaxcity.securedoc_be.constant;
 
 public class Constants {
+    public static final String GET_ARRAYS_LLC = "GET_ARRAYS_LLC";
     public static final String EMPTY_VALUE = "empty";
     public static final String AUTHORITIES = "authorities";
     public static final String ROLE = "role";
