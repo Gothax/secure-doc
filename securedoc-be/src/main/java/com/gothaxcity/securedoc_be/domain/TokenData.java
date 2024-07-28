@@ -1,6 +1,7 @@
 package com.gothaxcity.securedoc_be.domain;
 
 import com.gothaxcity.securedoc_be.dto.UserDto;
+import io.jsonwebtoken.Claims;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import java.util.List;
 @Getter @Setter
 public class TokenData {
     private UserDto user;
-//    private Claims claims;
+    private Claims claims;
     private boolean valid;
     private List<GrantedAuthority> authorities;
 }

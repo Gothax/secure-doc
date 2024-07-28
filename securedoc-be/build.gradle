@@ -37,7 +37,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
 	implementation group: 'com.google.guava', name: 'guava', version: '32.0.0-android'
-
+	dependencies {
+		implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+		runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+		runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+	}
 }
 
 tasks.named('test') {
