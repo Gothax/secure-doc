@@ -8,7 +8,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.AlternativeJdkIdGenerator;
 
@@ -30,17 +33,21 @@ public abstract class Auditable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "primary_key_seq")
     private Long id;
     private String referenceId = new AlternativeJdkIdGenerator().generateId().toString();
-    @NotNull
-    private Long createdBy;
-    @NotNull
-    private Long updatedBy;
-    @NotNull
+
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    @CreatedDate
+    @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    @CreatedBy
+    @Column(name = "created_by", nullable = false, updatable = false)
+    private Long createdBy;
+    @LastModifiedBy
+    @Column(name = "updated_by", nullable = false)
+    private Long updatedBy;
+
 
     @PrePersist
     public void beforePersist() {

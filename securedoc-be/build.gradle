@@ -36,6 +36,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+	implementation group: 'com.google.guava', name: 'guava', version: '32.0.0-android'
 
 }
 

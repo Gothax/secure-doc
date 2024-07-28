@@ -1,11 +1,14 @@
 package com.gothaxcity.securedoc_be.service.impl;
 
+import com.gothaxcity.securedoc_be.cache.CacheStore;
+import com.gothaxcity.securedoc_be.domain.RequestContext;
 import com.gothaxcity.securedoc_be.entity.ConfirmationEntity;
 import com.gothaxcity.securedoc_be.entity.CredentialEntity;
 import com.gothaxcity.securedoc_be.entity.RoleEntity;
 import com.gothaxcity.securedoc_be.entity.UserEntity;
 import com.gothaxcity.securedoc_be.enumeration.Authority;
 import com.gothaxcity.securedoc_be.enumeration.EventType;
+import com.gothaxcity.securedoc_be.enumeration.LoginType;
 import com.gothaxcity.securedoc_be.event.UserEvent;
 import com.gothaxcity.securedoc_be.exception.ApiException;
 import com.gothaxcity.securedoc_be.repository.ConfirmationRepository;
@@ -19,6 +22,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final ConfirmationRepository confirmationRepository;
 //    private final BCryptPasswordEncoder encoder;
     private final ApplicationEventPublisher publisher;
+    private final CacheStore<String, Integer> userCache;
 
     @Override
     public void createUser(String firstName, String lastName, String email, String password) {
@@ -61,6 +66,32 @@ public class UserServiceImpl implements UserService {
         userEntity.setEnabled(true);
         userRepository.save(userEntity);
         confirmationRepository.delete(confirmationEntity);
+    }
+
+    @Override
+    public void updateLoginAttempt(String email, LoginType loginType) {
+        UserEntity userEntityByEmail = getUserEntityByEmail(email);
+        RequestContext.setUserId(userEntityByEmail.getId());
+        switch (loginType) {
+            case LOGIN_ATTEMPT -> {
+                if (userCache.get(userEntityByEmail.getEmail()) == null) {
+                    userEntityByEmail.setLoginAttempts(0);
+                    userEntityByEmail.setAccountNonLocked(true);
+                }
+                userEntityByEmail.setLoginAttempts(userEntityByEmail.getLoginAttempts() + 1);
+                userCache.put(userEntityByEmail.getEmail(), userEntityByEmail.getLoginAttempts());
+                if (userCache.get(userEntityByEmail.getEmail()) > 5) {
+                    userEntityByEmail.setAccountNonLocked(false);
+                }
+            }
+            case LOGIN_SUCCESS -> {
+                userEntityByEmail.setAccountNonLocked(true);
+                userEntityByEmail.setLoginAttempts(0);
+                userEntityByEmail.setLastLogin(LocalDateTime.now());
+                userCache.evict(userEntityByEmail.getEmail());
+            }
+        }
+        userRepository.save(userEntityByEmail);
     }
 
     private UserEntity getUserEntityByEmail(String email) {

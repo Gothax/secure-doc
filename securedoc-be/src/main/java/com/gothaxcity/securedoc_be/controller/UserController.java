@@ -8,8 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -39,11 +37,6 @@ public class UserController {
         return ResponseEntity.ok().body(getResponse(request, emptyMap(), "Account verified.", OK));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Response> test(@RequestBody UserRequest userRequest) {
-        Authentication authenticate = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(userRequest.getEmail(), userRequest.getPassword()));
-        return ResponseEntity.ok().build();
-    }
 
     private URI getUri() {
         return URI.create("");
