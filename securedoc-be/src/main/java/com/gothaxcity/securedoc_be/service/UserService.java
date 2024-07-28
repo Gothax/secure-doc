@@ -1,6 +1,7 @@
 package com.gothaxcity.securedoc_be.service;
 
 
+import com.gothaxcity.securedoc_be.dto.UserDto;
 import com.gothaxcity.securedoc_be.entity.RoleEntity;
 import com.gothaxcity.securedoc_be.enumeration.LoginType;
 
@@ -9,4 +10,5 @@ public interface UserService {
     RoleEntity getRoleName(String name);
     void verifyAccountKey(String key);
     void updateLoginAttempt(String email, LoginType loginType);
+    UserDto getUserByUserId(String userId);
 }

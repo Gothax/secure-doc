@@ -2,6 +2,7 @@ package com.gothaxcity.securedoc_be.service.impl;
 
 import com.gothaxcity.securedoc_be.cache.CacheStore;
 import com.gothaxcity.securedoc_be.domain.RequestContext;
+import com.gothaxcity.securedoc_be.dto.UserDto;
 import com.gothaxcity.securedoc_be.entity.ConfirmationEntity;
 import com.gothaxcity.securedoc_be.entity.CredentialEntity;
 import com.gothaxcity.securedoc_be.entity.RoleEntity;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.gothaxcity.securedoc_be.utils.UserUtils.createUserEntity;
@@ -94,6 +94,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntityByEmail);
     }
 
+
+    @Override
+    public UserDto getUserByUserId(String userId) {
+        UserEntity userEntityByUserId = userRepository.findUserEntityByUserId(userId).get();
+    }
+
     private UserEntity getUserEntityByEmail(String email) {
         Optional<UserEntity> userByEmail = userRepository.findByEmailIgnoreCase(email);
         return userByEmail.orElseThrow(()-> new ApiException("User not found"));
@@ -107,4 +113,6 @@ public class UserServiceImpl implements UserService {
         var role = getRoleName(Authority.USER.name());
         return createUserEntity(firstName, lastName, email, role);
     }
+
+
 }
