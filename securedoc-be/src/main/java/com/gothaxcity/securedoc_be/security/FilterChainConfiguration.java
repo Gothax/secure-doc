@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,6 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.List;
 
+import static com.gothaxcity.securedoc_be.constant.Constants.LOGIN_PATH;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -29,15 +30,15 @@ public class FilterChainConfiguration {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
-                                                  request.requestMatchers("/user/login").permitAll()
+                                                  request.requestMatchers(LOGIN_PATH).permitAll()
                                                           .anyRequest().authenticated())
                 .build();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
-        MyOwnAuthenticationProvider myOwnAuthenticationProvider = new MyOwnAuthenticationProvider(userDetailsService);
-        return new ProviderManager(myOwnAuthenticationProvider);
+        ApiAuthenticationProvider apiAuthenticationProvider = new ApiAuthenticationProvider(userDetailsService);
+        return new ProviderManager(apiAuthenticationProvider);
     }
 
     @Bean

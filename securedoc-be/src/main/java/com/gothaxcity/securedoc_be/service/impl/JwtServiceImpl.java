@@ -146,11 +146,21 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService {
     public <T> T getTokenData(String token, Function<TokenData, T> tokenFunction) {
         return tokenFunction.apply(
                 TokenData.builder()
-                        .valid(true)
+                        .valid(Objects.equals(userService.getUserByUserId(subject.apply(token)).getUserId(), claimsFunction.apply(token).getSubject()))
                         .authorities(authorities.apply(token))
                         .claims(claimsFunction.apply(token))
                         .user(userService.getUserByUserId(subject.apply(token)))
                         .build()
         );
+    }
+
+    @Override
+    public void removeCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
+        Optional<Cookie> optionalCookie = extractCookie.apply(request, cookieName);
+        if (optionalCookie.isPresent()) {
+            Cookie cookie = optionalCookie.get();
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
     }
 }

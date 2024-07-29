@@ -97,7 +97,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByUserId(String userId) {
-        UserEntity userEntityByUserId = userRepository.findUserEntityByUserId(userId).get();
+        return null;
+    }
+
+    @Override
+    public UserDto getUserByEmail(String email) {
+        return null;
+    }
+
+    @Override
+    public CredentialEntity getUserCredentialById(Long id) {
+        return null;
     }
 
     private UserEntity getUserEntityByEmail(String email) {
